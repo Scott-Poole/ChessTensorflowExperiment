@@ -1,0 +1,102 @@
+<html lang="en">
+	<head id="myhead">
+		<meta charset="UTF-8">
+		<script src="static/jquery-3.6.0.js"></script>
+		<link rel="stylesheet" href="static/chessboard-1.0.0.min.css">
+		<script src="static/chessboard-1.0.0.min.js"></script>
+		
+		
+		<script src="static/chess.js"></script>
+		
+	</head>
+	<div id="myBoard" style="width: 400px"></div>
+	Piece on promotion <select id="promotePiece">
+		<option value = "q" selected>Queen</option>
+		<option value = "n">Knight</option>
+		<option value="r">Rook</option>
+		<option value="b">Bishop</option>
+	</select><br>
+	Color Pieces <select id="selectedColor">
+		<option value = "w" selected>White</option>
+		<option value = "b">Black</option>
+		<option value="r">Random</option>
+	</select><br>
+	<button id="newGame">New Game</button>
+	
+	<script type=text/javascript>
+		
+		var board = null
+		
+		var promotePiece = document.getElementById("promotePiece");
+		var selectedColor = document.getElementById("selectedColor");
+		var newGame = document.getElementById("newGame");
+		
+		var color = "w";
+		var gameOver = false;
+		
+		newGame.onclick = resetGame;
+		
+		function resetGame(){
+			gameOver = false;
+			color = selectedColor.value;
+			if(selectedColor.value == "r"){
+				color = Math.random() < 0.5 ? "w" : "b";
+			}
+			if(color == "w"){
+				board.orientation('white');
+			}else{
+				board.orientation('black');
+			}
+			
+			$.get('/resetGame/'+color,
+				function(fen) {
+					board.position(fen)
+			});
+		}
+
+		function onDragStart (source, piece, position, orientation) {
+		  // do not pick up pieces if the game is over
+		  if (gameOver) return false
+		  // only pick up pieces for Human
+		  if (piece.search(color) == -1) return false
+		}
+
+		function onDrop (source, target) {
+			$.get('/tryMove/'+source+'/'+target+'/'+promotePiece.value,
+				function(data) {
+					board.position(data.fen);
+					if(data.result){
+						gameOver=true;
+						window.alert(data.result+' by '+data.termination);
+					}
+			});
+		  
+		}
+
+		board = Chessboard('myBoard', {
+		  draggable: true,
+		  position: 'start',
+		  orientation:'white',
+		  onDragStart: onDragStart,
+		  onDrop: onDrop,
+		  
+		})
+		resetGame()
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</script>
+	
+</html>
