@@ -1,6 +1,6 @@
 # ChessTensorflowExperiment
 
-A few files used in a much larger chess playing neural network endevour.
+A few files used in a much larger chess playing neural network endeavour.
 
 pgnToBitBoard4.py - A script used to sample chess .pgn files and convert information about chess games 
   into data points of a chess position and its respective stockfish chess position evaluation. (The stockfish 
